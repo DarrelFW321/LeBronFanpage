@@ -40,10 +40,13 @@ export async function generateMetadata(
 const fetchProfile = async () => {
     try {
         // Set the base URL based on the environment (local or production)
-        const baseUrl = process.env.NODE_ENV === 'development'
-            ? 'http://localhost:3000' // Local development URL
-            : process.env.NEXT_PUBLIC_PRODUCTION_API_BASE_URL; // Production URL
+        // const baseUrl = process.env.NODE_ENV === 'development'
+        //     ? 'http://localhost:3000' // Local development URL
+        //     : process.env.NEXT_PUBLIC_PRODUCTION_API_BASE_URL; // Production URL
 
+        const baseUrl = 'http://localhost:3000';
+        console.log("Base URL being used:", baseUrl); // Log base URL for debugging
+            
         // Call the API endpoint
         const response = await fetch(`${baseUrl}/api/profile`, {
             method: 'GET',
