@@ -47,7 +47,7 @@ const fetchPlayerStats = async () => {
     try {
         const baseUrl = process.env.NODE_ENV === 'development' 
             ? 'http://localhost:3000'  // Local development
-            : 'https://your-vercel-deployment-url.com'; // Production URL
+            : 'https://lebron-git-main-darrelfw321s-projects.vercel.app/'; // Production URL
 
         const response = await fetch(`${baseUrl}/api/nba`); // Adjust the URL as needed
         if (!response.ok) {
