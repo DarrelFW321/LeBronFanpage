@@ -1,6 +1,34 @@
 import axios from 'axios';
 import * as cheerio from 'cheerio';
 
+interface GameData {
+  date: string;
+  team: string;
+  opponent: string;
+  result: string;
+  mp: string;
+  fg: string;
+  fga: string;
+  fgPercent: string;
+  threeP: string;
+  threePA: string;
+  threePPercent: string;
+  ft: string;
+  fta: string;
+  ftPercent: string;
+  orb: string;
+  drb: string;
+  trb: string;
+  ast: string;
+  stl: string;
+  blk: string;
+  tov: string;
+  pf: string;
+  pts: string;
+  gmSc: string;
+  plusMinus: string;
+}
+
 export default async function handler(req, res) {
   try {
     // Step 1: Fetch the page content from LeBron's game log on Basketball Reference
@@ -14,7 +42,7 @@ export default async function handler(req, res) {
     const $ = cheerio.load(response.data);
 
     // Step 3: Select the game log rows and map the last 5 games
-    const last5Games = [];
+    const last5Games: GameData[] = []; // Typed as GameData[]
     const rows = $('tr'); // Select all rows in the table
 
     // Iterate over rows and collect only game rows
@@ -24,7 +52,7 @@ export default async function handler(req, res) {
 
       // Check if row contains game data (skip non-game rows, headers, or empty rows)
       if (columns.length === 26) {
-        const gameData = {
+        const gameData: GameData = {
           date: $(row).find('[data-stat="date"] a').text(), // Game date
           team: $(row).find('[data-stat="team_name_abbr"] a').text(), // Team
           opponent: $(row).find('[data-stat="opp_name_abbr"] a').text(), // Opponent
