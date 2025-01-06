@@ -450,15 +450,14 @@ export default async function Profile(
                                             marginBottom="m">
                                             {experience.role}
                                         </Text>
-                                        <Flex
-                                            as="ul"
-                                            direction="column" gap="16">
-                                            {experience.achievements.map((achievement: string, index: any) => (
+                                        <Flex as="ul" direction="column" gap="16">
+                                            {experience.achievements.map((achievement, index) => (
                                                 <Text
                                                     as="li"
                                                     variant="body-default-m"
-                                                    key={`${experience.company}-${index}`}>
-                                                    {achievement}
+                                                    key={`${experience.company}-${index}`}
+                                                >
+                                                    {achievement} {/* Directly pass the string */}
                                                 </Text>
                                             ))}
                                         </Flex>

@@ -1,3 +1,25 @@
+interface PlayerData {
+  FIRST_NAME: string;
+  LAST_NAME: string;
+  TEAM_NAME: string;
+  JERSEY: string;
+  POSITION: string;
+  PPG: number;
+  RPG: number;
+  APG: number;
+  PIE: number;
+  HEIGHT: string;
+  WEIGHT: string;
+  COUNTRY: string;
+  LAST_AFFILIATION: string;
+  AGE: string;
+  BIRTHDATE: string;
+  DRAFT_YEAR?: string;
+  DRAFT_ROUND?: string;
+  DRAFT_NUMBER?: string;
+  SEASON_EXP: string;
+}
+
 export default async function handler(req, res) {
   try {
     console.log("Fetching player data...");
@@ -21,8 +43,8 @@ export default async function handler(req, res) {
     const playerStats = playerInfo.rowSet[0]; // Single row for LeBron's data
     const headers = playerInfo.headers;
 
-    // Creating a structured response based on headers
-    const playerData = {};
+    // Create a playerData object with Partial<PlayerData> to allow optional properties
+    const playerData: Partial<PlayerData> = {}; 
     headers.forEach((header, index) => {
       playerData[header] = playerStats[index];
     });
@@ -61,5 +83,3 @@ export default async function handler(req, res) {
     });
   }
 }
-
-  

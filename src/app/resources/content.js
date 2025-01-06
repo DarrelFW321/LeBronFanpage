@@ -1,5 +1,6 @@
 import { InlineCode } from "@/once-ui/components";
 
+  
 const person = {
     firstName: 'LeBron',
     lastName:  'James',
@@ -8,7 +9,7 @@ const person = {
     },
     role:      'Professional Basketball Player',
     avatar:    '/images/avatar.jpg',
-    location:  'Asia/Jakarta',        // Expecting the IANA time zone identifier, e.g., 'Europe/Vienna'
+    location:  'America/Toronto',        // Expecting the IANA time zone identifier, e.g., 'Europe/Vienna'
     languages: []  // optional: Leave the array empty if you don't want to display languages
 }
 
