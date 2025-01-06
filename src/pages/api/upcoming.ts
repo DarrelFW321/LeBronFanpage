@@ -45,13 +45,14 @@ export default async function handler(req, res) {
         // Filter games for the future and sort by the full date-time
         const upcomingGames = filteredGames
             .filter((game) => {
-                const gameDate = new Date(game.gameDateUTC); // Game date in UTC
-                const gameTime = new Date(game.gameTimeUTC); // Game time in UTC
                 const gameDateTime = new Date(game.gameDateTimeUTC); // Combined date-time
-
                 return gameDateTime > currentDate; // Only future games
             })
-            .sort((a, b) => new Date(a.gameDateTimeUTC) - new Date(b.gameDateTimeUTC)) // Sort by combined date-time
+            .sort((a, b) => {
+                const dateA = new Date(a.gameDateTimeUTC).getTime();
+                const dateB = new Date(b.gameDateTimeUTC).getTime();
+                return dateA - dateB; // Sort by combined date-time in milliseconds
+            })
             .slice(0, 5); // Get the next 5 games
 
         // Format the response
