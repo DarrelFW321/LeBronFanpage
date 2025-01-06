@@ -121,6 +121,7 @@ const fetchRecentGames = async () => {
         //     : process.env.NEXT_PUBLIC_PRODUCTION_API_BASE_URL; // Production URL
 
 		const baseUrl = 'http://localhost:3000';
+        
 
         // Call the API endpoint for fetching recent games
         const response = await fetch(`${baseUrl}/api/recentgames`, {
@@ -134,6 +135,8 @@ const fetchRecentGames = async () => {
         if (!response.ok) {
             throw new Error(`Failed to fetch recent games: ${response.statusText}`);
         }
+
+        console.log('Raw Response:', response);
 
         // Parse the JSON data
         const data = await response.json();
@@ -178,9 +181,11 @@ const fetchTeam = async () => {
 const fetchUpcomingGames = async (team) => {
     try {
         // Set the base URL based on the environment (local or production)
-        const baseUrl = process.env.NODE_ENV === 'development'
-            ? 'http://localhost:3000' // Local development URL
-            : process.env.NEXT_PUBLIC_PRODUCTION_API_BASE_URL; // Production URL
+        // const baseUrl = process.env.NODE_ENV === 'development'
+        //     ? 'http://localhost:3000' // Local development URL
+        //     : process.env.NEXT_PUBLIC_PRODUCTION_API_BASE_URL; // Production URL
+
+        const baseUrl = 'http://localhost:3000';
 
         // Call the API endpoint with the team name
         const response = await fetch(`${baseUrl}/api/upcoming?team=${team}`, {
@@ -396,6 +401,8 @@ async function LiveTotalStats() {
 
 async function LastFiveGamesStats() {
     let games = await fetchRecentGames();
+
+    console.log("Games fetched:", games);
 
     const currentDate = new Date();
     const formattedDate = currentDate.toLocaleDateString();
