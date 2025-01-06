@@ -12,8 +12,7 @@ export async function GET(request: Request) {
     ).then((res) => res.arrayBuffer());
     const fontData = await font;
 
-    const t = await getTranslations();
-    const { person } = renderContent(t);
+    const { person } = renderContent();
 
     return new ImageResponse(
         (

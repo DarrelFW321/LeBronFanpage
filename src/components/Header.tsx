@@ -67,8 +67,7 @@ export const Header = () => {
         })
     }
 
-    const t = useTranslations();
-    const { person, home, about, blog, work, gallery } = renderContent(t);
+    const { person, home, about, blog, work, gallery } = renderContent();
 
     return (
         <>
@@ -109,27 +108,27 @@ export const Header = () => {
                                     <Flex paddingX="2" hide="s">{home.label}</Flex>
                                 </ToggleButton>
                             )}
-                            { routes['/about'] && (
+                            { routes['/profile'] && (
                                 <ToggleButton
                                     prefixIcon="person"
-                                    href={`/${params?.locale}/about`}
-                                    selected={pathname === "/about"}>
+                                    href={`/${params?.locale}/profile`}
+                                    selected={pathname === "/profile"}>
                                     <Flex paddingX="2" hide="s">{about.label}</Flex>
                                 </ToggleButton>
                             )}
-                            { routes['/work'] && (
+                            { routes['/stats'] && (
                                 <ToggleButton
-                                    prefixIcon="grid"
-                                    href={`/${params?.locale}/work`}
-                                    selected={pathname.startsWith('/work')}>
+                                    prefixIcon="chartSimple"
+                                    href={`/${params?.locale}/stats`}
+                                    selected={pathname.startsWith('/stats')}>
                                     <Flex paddingX="2" hide="s">{work.label}</Flex>
                                 </ToggleButton>
                             )}
-                            { routes['/blog'] && (
+                            { routes['/highlights'] && (
                                 <ToggleButton
                                     prefixIcon="book"
-                                    href={`/${params?.locale}/blog`}
-                                    selected={pathname.startsWith('/blog')}>
+                                    href={`/${params?.locale}/highlights`}
+                                    selected={pathname.startsWith('/highlights')}>
                                     <Flex paddingX="2" hide="s">{blog.label}</Flex>
                                 </ToggleButton>
                             )}

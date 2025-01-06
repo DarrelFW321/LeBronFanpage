@@ -7,9 +7,7 @@ import { useTranslations } from "next-intl";
 export async function generateMetadata(
 	{params: {locale}}: { params: { locale: string }}
 ) {
-
-	const t = await getTranslations();
-	const { gallery } = renderContent(t);
+	const { gallery } = renderContent();
 
 	const title = gallery.title;
 	const description = gallery.description;
@@ -43,8 +41,7 @@ export default function Gallery(
 	{ params: {locale}}: { params: { locale: string }}
 ) {
 	unstable_setRequestLocale(locale);
-	const t = useTranslations();
-	const { gallery, person } = renderContent(t);
+	const { gallery, person } = renderContent();
     return (
         <Flex fillWidth>
             <script

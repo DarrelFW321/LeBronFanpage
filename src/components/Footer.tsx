@@ -6,8 +6,7 @@ import styles from './Footer.module.scss'
 export const Footer = () => {
     const currentYear = new Date().getFullYear();
 
-    const t = useTranslations();
-    const { person, social } = renderContent(t);
+    const { person, social } = renderContent();
 
     return (
         <Flex
@@ -27,7 +26,7 @@ export const Footer = () => {
                         © {currentYear} /
                     </Text>
                     <Text paddingX="4">
-                        {person.name}
+                        Darrel Wihandi
                     </Text>
                     <Text onBackground="neutral-weak">
                         {/* Usage of this template requires attribution. Please don't remove the link to Once UI. */}
@@ -36,17 +35,41 @@ export const Footer = () => {
                 </Text>
                 <Flex
                     gap="16">
-                    {social.map((item) => (
-                        item.link && (
-                            <IconButton
-                                key={item.name}
-                                href={item.link}
-                                icon={item.icon}
-                                tooltip={item.name}
-                                size="s"
-                                variant="ghost"/>
-                        )
-                    ))}
+                    <IconButton
+                        key="GitHub"
+                        href="https://github.com/DarrelFW321"
+                        icon="github"
+                        tooltip="GitHub"
+                        size="s"
+                        variant="ghost"
+                    />
+
+                    <IconButton
+                        key="Discord"
+                        href="https://discord.com/users/pines5150"
+                        icon="discord"
+                        tooltip="Discord"
+                        size="s"
+                        variant="ghost"
+                    />
+
+                    <IconButton
+                        key="Instagram"
+                        href="https://www.instagram.com/darrel.feirow/"
+                        icon="instagram"
+                        tooltip="Instagram"
+                        size="s"
+                        variant="ghost"
+                    />
+
+                    <IconButton
+                        key="Email"
+                        href="mailto:darrel.wihandi@gmail.com/"
+                        icon="email"
+                        tooltip="Email"
+                        size="s"
+                        variant="ghost"
+                    />
                 </Flex>
             </Flex>
             <Flex height="80" show="s"></Flex>

@@ -17,6 +17,7 @@ type Metadata = {
     images: string[];
     tag?: string;
     team: Team[];
+    components?: string[];
 };
 
 function getMDXFiles(dir: string) {
@@ -43,6 +44,7 @@ function readMDXFile(filePath: string) {
         images: data.images || [],
         tag: data.tag || [],
         team: data.team || [],
+        components: data.components || [], // Defaults to an empty array if not provided
     };
 
     return { metadata, content };

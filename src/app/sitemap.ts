@@ -6,16 +6,16 @@ export default async function sitemap() {
     const locales = routing.locales;
     const includeLocalePrefix = locales.length > 1;
 
-    let blogs = locales.flatMap((locale) => 
-        getPosts(['src', 'app', '[locale]', 'blog', 'posts', locale]).map((post) => ({
-            url: `${baseURL}${includeLocalePrefix ? `/${locale}` : ''}/blog/${post.slug}`,
+    let highlights = locales.flatMap((locale) => 
+        getPosts(['src', 'app', '[locale]', 'highlights', 'posts', locale]).map((post) => ({
+            url: `${baseURL}${includeLocalePrefix ? `/${locale}` : ''}/highlights/${post.slug}`,
             lastModified: post.metadata.publishedAt,
         }))
     );
 
-    let works = locales.flatMap((locale) => 
-        getPosts(['src', 'app', '[locale]', 'work', 'projects', locale]).map((post) => ({
-            url: `${baseURL}${includeLocalePrefix ? `/${locale}` : ''}/work/${post.slug}`,
+    let stats = locales.flatMap((locale) => 
+        getPosts(['src', 'app', '[locale]', 'stats', 'projects', locale]).map((post) => ({
+            url: `${baseURL}${includeLocalePrefix ? `/${locale}` : ''}/stats/${post.slug}`,
             lastModified: post.metadata.publishedAt,
         }))
     );
@@ -29,5 +29,5 @@ export default async function sitemap() {
         }))
     );
 
-    return [...routes, ...blogs, ...works]
+    return [...routes, ...highlights, ...stats]
 }

@@ -19,19 +19,17 @@ import { Background, Flex } from "@/once-ui/components";
 export async function generateMetadata(
 	{ params: { locale }}: { params: { locale: string }}
 ) {
-
-	const t = await getTranslations();
-	const { person, home } = renderContent(t);
+	const { person, home } = renderContent();
 
 	return {
 		metadataBase: new URL(`https://${baseURL}/${locale}`),
 		title: home.title,
 		description: home.description,
 		openGraph: {
-			title: `${person.firstName}'s Portfolio`,
-			description: 'Portfolio website showcasing my work.',
+			title: `The King's Court`,
+			description: 'LeBron James Fanpage',
 			url: baseURL,
-			siteName: `${person.firstName}'s Portfolio`,
+			siteName: `The King's Court`,
 			locale: 'en_US',
 			type: 'website',
 		},

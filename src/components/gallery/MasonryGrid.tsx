@@ -14,8 +14,7 @@ export default function MasonryGrid() {
         560: 1
     };
 
-    const t = useTranslations();
-    const { gallery } = renderContent(t);
+    const { gallery } = renderContent();
 
     return (
         <Masonry

@@ -2,6 +2,7 @@ import React from 'react';
 
 import { Heading, Flex, Text, Button,  Avatar, RevealFx, Arrow } from '@/once-ui/components';
 import { Projects } from '@/components/work/Projects';
+import { InlineCode } from "@/once-ui/components";
 
 import { baseURL, routes, renderContent } from '@/app/resources'; 
 import { Mailchimp } from '@/components';
@@ -9,11 +10,11 @@ import { Posts } from '@/components/blog/Posts';
 import { getTranslations, unstable_setRequestLocale } from 'next-intl/server';
 import { useTranslations } from 'next-intl';
 
+
 export async function generateMetadata(
 	{params: {locale}}: { params: { locale: string }}
 ) {
-	const t = await getTranslations();
-    const { home } = renderContent(t);
+    const { home } = renderContent();
 	const title = home.title;
 	const description = home.description;
 	const ogImage = `https://${baseURL}/og?title=${encodeURIComponent(title)}`;
@@ -42,12 +43,35 @@ export async function generateMetadata(
 	};
 }
 
-export default function Home(
+const fetchPlayerStats = async () => {
+    try {
+        const baseUrl = process.env.NODE_ENV === 'development' 
+            ? 'http://localhost:3000'  // Local development
+            : 'https://your-vercel-deployment-url.com'; // Production URL
+
+        const response = await fetch(`${baseUrl}/api/nba`); // Adjust the URL as needed
+        if (!response.ok) {
+            throw new Error('Failed to fetch player stats');
+        }
+        const data = await response.json();
+        console.log(`data is ${data.totalPoints}`);
+        return data.totalPoints;
+    } catch (error) {
+        console.error('Error fetching player stats:', error);
+        return null;
+    }
+}
+
+function formatNumberWithCommas(number) {
+    return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+}
+
+export default async function Home(
 	{ params: {locale}}: { params: { locale: string }}
 ) {
 	unstable_setRequestLocale(locale);
-	const t = useTranslations();
-	const { home, about, person, newsletter } = renderContent(t);
+	let data = await fetchPlayerStats();
+	const { home, about, person, newsletter } = renderContent();
 	return (
 		<Flex
 			maxWidth="m" fillWidth gap="xl"
@@ -95,32 +119,9 @@ export default function Home(
 								wrap="balance"
 								onBackground="neutral-weak"
 								variant="heading-default-xl">
-								{home.subline}
+								{formatNumberWithCommas(data)} Points and His Legacy<br/><InlineCode>{home.subline}</InlineCode>
 							</Text>
-						</RevealFx>
-						<RevealFx translateY="12" delay={0.4}>
-							<Flex fillWidth>
-								<Button
-									id="about"
-									data-border="rounded"
-									href={`/${locale}/about`}
-									variant="tertiary"
-									size="m">
-									<Flex
-										gap="8"
-										alignItems="center">
-										{about.avatar.display && (
-											<Avatar
-												style={{marginLeft: '-0.75rem', marginRight: '0.25rem'}}
-												src={person.avatar}
-												size="m"/>
-											)}
-											{t("about.title")}
-											<Arrow trigger="#about"/>
-									</Flex>
-								</Button>
-							</Flex>
-						</RevealFx>
+						</RevealFx>	
 					</Flex>
 				
 			</Flex>
