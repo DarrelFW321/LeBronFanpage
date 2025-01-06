@@ -42,7 +42,7 @@ const fetchProfile = async () => {
         // Set the base URL based on the environment (local or production)
         const baseUrl = process.env.NODE_ENV === 'development'
             ? 'http://localhost:3000' // Local development URL
-            : 'https://lebron-git-main-darrelfw321s-projects.vercel.app/'; // Production URL
+            : process.env.NEXT_PUBLIC_PRODUCTION_API_BASE_URL; // Production URL
 
         // Call the API endpoint
         const response = await fetch(`${baseUrl}/api/profile`, {
