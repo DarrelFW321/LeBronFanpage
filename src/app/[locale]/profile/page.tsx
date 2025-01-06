@@ -45,9 +45,9 @@ const fetchProfile = async () => {
             : process.env.NEXT_PUBLIC_PRODUCTION_API_BASE_URL; // Production URL
 
         console.log("Base URL being used:", baseUrl); // Log base URL for debugging
-            
+        const url = `${baseUrl}/api/profile`;
         // Call the API endpoint
-        const response = await fetch(`${baseUrl}/api/profile`, {
+        const response = await fetch(url, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',

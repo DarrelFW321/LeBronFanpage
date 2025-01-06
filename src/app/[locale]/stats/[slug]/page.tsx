@@ -89,9 +89,10 @@ const fetchCareerStats = async () => {
             : process.env.NEXT_PUBLIC_PRODUCTION_API_BASE_URL; // Production URL
 
 
-
-        // Call the API endpoint for fetching career stats
-        const response = await fetch(`${baseUrl}/api/career`, {
+            const url = `${baseUrl}/api/career`;
+            console.log(url);
+            // Call the API endpoint for fetching recent games
+            const response = await fetch(url, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -120,9 +121,10 @@ const fetchRecentGames = async () => {
             ? 'http://localhost:3000' // Local development URL
             : process.env.NEXT_PUBLIC_PRODUCTION_API_BASE_URL; // Production URL
 
-
+        const url = `${baseUrl}/api/recentgames`;
+        console.log(url);
         // Call the API endpoint for fetching recent games
-        const response = await fetch(`${baseUrl}/api/recentgames`, {
+        const response = await fetch(url, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -153,9 +155,10 @@ const fetchTeam = async () => {
             ? 'http://localhost:3000' // Local development URL
             : process.env.NEXT_PUBLIC_PRODUCTION_API_BASE_URL; // Production URL
 
-
+        const url = `${baseUrl}/api/profile`;
+        console.log(url);
         // Call the API endpoint
-        const response = await fetch(`${baseUrl}/api/profile`, {
+        const response = await fetch(url, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -184,8 +187,9 @@ const fetchUpcomingGames = async (team) => {
             : process.env.NEXT_PUBLIC_PRODUCTION_API_BASE_URL; // Production URL
 
 
+        const url = `${baseUrl}/api/upcoming?team=${team}`
         // Call the API endpoint with the team name
-        const response = await fetch(`${baseUrl}/api/upcoming?team=${team}`, {
+        const response = await fetch(url, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
