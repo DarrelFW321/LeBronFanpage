@@ -209,7 +209,7 @@ const fetchUpcomingGames = async (team) => {
     }
 };
 
-export async function FiveUpcomingGames() {
+async function FiveUpcomingGames() {
     // Fetch the team name
     const team = await fetchTeam();  // Assuming this function will return the team name (e.g., 'lakers')
 
@@ -299,8 +299,7 @@ export async function FiveUpcomingGames() {
         </div>
     );
 }
-
-export async function LiveTotalStats() {
+async function LiveTotalStats() {
     let data = await fetchCareerStats();
 
     const currentDate = new Date();
@@ -390,7 +389,7 @@ export async function LiveTotalStats() {
     );
 }
 
-export async function LastFiveGamesStats() {
+async function LastFiveGamesStats() {
     let games = await fetchRecentGames();
 
     const currentDate = new Date();
