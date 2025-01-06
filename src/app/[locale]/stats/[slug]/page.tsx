@@ -331,8 +331,8 @@ async function LiveTotalStats() {
                         <strong style={{ color: 'var(--color-text-primary)' }}>
                             {key.replace(/([A-Z])/g, ' $1')}
                         </strong>
-                        <span>{typeof value === 'number' && value % 1 !== 0 ? value.toFixed(2) : value}</span>
-                    </li>
+                        <span>{(typeof value === 'number' && value % 1 !== 0 ? value.toFixed(2) : value) as React.ReactNode}</span>
+                        </li>
                 ))}
             </ul>
         </div>
