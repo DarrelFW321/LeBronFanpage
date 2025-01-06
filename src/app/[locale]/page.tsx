@@ -46,11 +46,10 @@ export async function generateMetadata(
 const fetchPlayerStats = async () => {
     try {
         // Set the base URL based on the environment (local or production)
-        // const baseUrl = process.env.NODE_ENV === 'development'
-        //     ? 'http://localhost:3000' // Local development URL
-        //     : process.env.NEXT_PUBLIC_PRODUCTION_API_BASE_URL; // Production URL
+        const baseUrl = process.env.NODE_ENV === 'development'
+            ? 'http://localhost:3000' // Local development URL
+            : process.env.NEXT_PUBLIC_PRODUCTION_API_BASE_URL; // Production URL
 
-		const baseUrl = 'http://localhost:3000';
 
         const response = await fetch(`${baseUrl}/api/nba`); // Adjust the URL as needed
         if (!response.ok) {
