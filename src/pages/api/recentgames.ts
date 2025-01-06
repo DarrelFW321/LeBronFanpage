@@ -29,7 +29,17 @@ interface GameData {
   plusMinus: string;
 }
 
-export default async function handler(req, res) {
+export default async function handler(req, res) {4
+
+  res.setHeader('Access-Control-Allow-Origin', '*'); // Allow all origins (use specific domains in production for security)
+  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS'); // Allow specific methods
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type'); // Allow specific headers
+
+  // Handle preflight requests (OPTIONS method)
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end(); // End the preflight request
+  }
+  
   try {
     // Step 1: Fetch the page content from LeBron's game log on Basketball Reference
     const response = await axios.get('https://www.basketball-reference.com/players/j/jamesle01.html');
