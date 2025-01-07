@@ -50,15 +50,14 @@ const fetchPlayerStats = async () => {
             ? 'http://localhost:3000' // Local development URL
             : process.env.NEXT_PUBLIC_PRODUCTION_API_BASE_URL; // Production URL
 
-		const url = `${baseUrl}/api/nba`;
+		const url = `${baseUrl}/api/career`;
 		console.log(url)
         const response = await fetch(url); // Adjust the URL as needed
         if (!response.ok) {
             throw new Error('Failed to fetch player stats');
         }
         const data = await response.json();
-        console.log(`data is ${data.totalPoints}`);
-        return data.totalPoints;
+        return data.careerStats.points
     } catch (error) {
         console.error('Error fetching player stats:', error);
         return null;
