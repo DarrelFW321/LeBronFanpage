@@ -310,6 +310,7 @@ async function FiveUpcomingGames() {
         </div>
     );
 }
+
 async function LiveTotalStats() {
     let data = await fetchCareerStats();
 
@@ -324,9 +325,9 @@ async function LiveTotalStats() {
             marginBottom: '16px',
             boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)'
         }}>
-            <h3 style={{ 
-                marginBottom: '12px', 
-                color: 'var(--color-text-primary)' 
+            <h3 style={{
+                marginBottom: '12px',
+                color: 'var(--color-text-primary)'
             }}>
                 {title}
             </h3>
@@ -343,36 +344,37 @@ async function LiveTotalStats() {
                             {key.replace(/([A-Z])/g, ' $1')}
                         </strong>
                         <span>{(typeof value === 'number' && value % 1 !== 0 ? value.toFixed(2) : value) as React.ReactNode}</span>
-                        </li>
+                    </li>
                 ))}
             </ul>
         </div>
     );
 
-    const regularSeasonStats = {
-        Points: data.regularSeason.points,
-        Rebounds: data.regularSeason.rebounds,
-        Assists: data.regularSeason.assists,
-        Steals: data.regularSeason.steals,
-        Blocks: data.regularSeason.blocks,
-        "Games Played": data.regularSeason.gamesPlayed,
-        "Field Goal Percentage": (data.regularSeason.fieldGoalPercentage * 100),
-        "Three-Point Percentage": (data.regularSeason.threePointPercentage * 100),
-        "Free Throw Percentage": (data.regularSeason.freeThrowPercentage * 100),
-        Minutes: data.regularSeason.minutes,
+    // Extracted data for regular season stats (career and current season)
+    const careerSeasonStats = {
+        Points: data.careerStats.points,
+        Rebounds: data.careerStats.rebounds,
+        Assists: data.careerStats.assists,
+        Steals: data.careerStats.steals,
+        Blocks: data.careerStats.blocks,
+        "Games Played": data.careerStats.games,
+        "Field Goal Percentage": data.careerStats.fieldGoalPercentage,
+        "Three-Point Percentage": data.careerStats.threePointPercentage,
+        "Free Throw Percentage": data.careerStats.freeThrowPercentage,
+        Minutes: data.careerStats.minutes,
     };
 
-    const playoffStats = {
-        Points: data.postSeason.points,
-        Rebounds: data.postSeason.rebounds,
-        Assists: data.postSeason.assists,
-        Steals: data.postSeason.steals,
-        Blocks: data.postSeason.blocks,
-        "Games Played": data.postSeason.gamesPlayed,
-        "Field Goal Percentage": (data.postSeason.fieldGoalPercentage * 100),
-        "Three-Point Percentage": (data.postSeason.threePointPercentage * 100),
-        "Free Throw Percentage": (data.postSeason.freeThrowPercentage * 100),
-        Minutes: data.postSeason.minutes,
+    const currentSeasonStats = {
+        Points: data.currentSeasonStats.points,
+        Rebounds: data.currentSeasonStats.rebounds,
+        Assists: data.currentSeasonStats.assists,
+        Steals: data.currentSeasonStats.steals,
+        Blocks: data.currentSeasonStats.blocks,
+        "Games Played": data.currentSeasonStats.games,
+        "Field Goal Percentage": data.currentSeasonStats.fieldGoalPercentage,
+        "Three-Point Percentage": data.currentSeasonStats.threePointPercentage,
+        "Free Throw Percentage": data.currentSeasonStats.freeThrowPercentage,
+        Minutes: data.currentSeasonStats.minutes,
     };
 
     return (
@@ -385,7 +387,7 @@ async function LiveTotalStats() {
                 color: 'var(--color-text-primary)',
                 textAlign: 'center'
             }}>
-                Career Statistics
+                Career and Current Season Statistics
             </h1>
             <p style={{
                 textAlign: 'center',
@@ -394,11 +396,12 @@ async function LiveTotalStats() {
             }}>
                 Updated as of {formattedDate}
             </p>
-            {statsCard("Regular Season Totals", regularSeasonStats)}
-            {statsCard("Playoff Totals", playoffStats)}
+            {statsCard("Career Season Totals", careerSeasonStats)}
+            {statsCard("Current Season Totals", currentSeasonStats)}
         </div>
     );
 }
+
 
 async function LastFiveGamesStats() {
     let games = await fetchRecentGames();

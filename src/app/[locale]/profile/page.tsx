@@ -72,12 +72,6 @@ export default async function Profile(
     { params: {locale}}: { params: { locale: string }}
 ) {
     let profile = await fetchProfile();
-    const date = new Date(profile.birthdate);
-    const formattedDate = new Intl.DateTimeFormat('en-US', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-    }).format(date);
     unstable_setRequestLocale(locale);
     const {person, about, social } = renderContent();
     const structure = [
@@ -238,177 +232,84 @@ export default async function Profile(
                         )}
                     </Flex>
 
-                    { about.intro.display && (
-                        <Flex
-                            direction="column"
-                            textVariant="body-default-l"
-                            fillWidth gap="m" marginBottom="xl">
-                            {about.intro.description}
-                        </Flex>
-                    )}
-
-                    { about.studies.display && (
+                    {about.studies.display && (
                         <>
-                            <Heading
-                                as="h2"
-                                id={about.studies.title}
-                                variant="display-strong-s"
-                                marginBottom="m">
+                            <Heading as="h2" id={about.studies.title} variant="display-strong-s" marginBottom="m">
                                 {about.studies.title}
                             </Heading>
-                            <Flex
-                                direction="column"
-                                fillWidth gap="l" marginBottom="40">
-                                    <Flex
-                                        fillWidth
-                                        gap="4"
-                                        direction="column">
-                                        <Text
-                                            id="Experience"
-                                            variant="heading-strong-l">
-                                            Birth Date
-                                        </Text>
-                                        <Text
-                                            variant="heading-default-xs"
-                                            onBackground="neutral-weak">
-                                            {formattedDate}
-                                        </Text>
-                                    </Flex>
-                                    <Flex
-                                        fillWidth
-                                        gap="4"
-                                        direction="column">
-                                        <Text
-                                            id="Current Team"
-                                            variant="heading-strong-l">
-                                            Current Team
-                                        </Text>
-                                        <Text
-                                            variant="heading-default-xs"
-                                            onBackground="neutral-weak">
-                                            {profile.team}
-                                        </Text>
-                                    </Flex>
-                                    <Flex
-                                        fillWidth
-                                        gap="4"
-                                        direction="column">
-                                        <Text
-                                            id="Jersey"
-                                            variant="heading-strong-l">
-                                            Jersey
-                                        </Text>
-                                        <Text
-                                            variant="heading-default-xs"
-                                            onBackground="neutral-weak">
-                                            {profile.jersey}
-                                        </Text>
-                                    </Flex>
-                                    <Flex
-                                        fillWidth
-                                        gap="4"
-                                        direction="column">
-                                        <Text
-                                            id="Position"
-                                            variant="heading-strong-l">
-                                            Position
-                                        </Text>
-                                        <Text
-                                            variant="heading-default-xs"
-                                            onBackground="neutral-weak">
-                                            {profile.position}
-                                        </Text>
-                                    </Flex>
-                                    <Flex
-                                        fillWidth
-                                        gap="4"
-                                        direction="column">
-                                        <Text
-                                            id="Height"
-                                            variant="heading-strong-l">
-                                            Height
-                                        </Text>
-                                        <Text
-                                            variant="heading-default-xs"
-                                            onBackground="neutral-weak">
-                                            {profile.height}
-                                        </Text>
-                                    </Flex>
-                                    <Flex
-                                        fillWidth
-                                        gap="4"
-                                        direction="column">
-                                        <Text
-                                            id="Weight"
-                                            variant="heading-strong-l">
-                                            Weight
-                                        </Text>
-                                        <Text
-                                            variant="heading-default-xs"
-                                            onBackground="neutral-weak">
-                                            {profile.weight}
-                                        </Text>
-                                    </Flex>
-                                    <Flex
-                                        fillWidth
-                                        gap="4"
-                                        direction="column">
-                                        <Text
-                                            id="Country"
-                                            variant="heading-strong-l">
-                                            Country
-                                        </Text>
-                                        <Text
-                                            variant="heading-default-xs"
-                                            onBackground="neutral-weak">
-                                            {profile.country}
-                                        </Text>
-                                    </Flex>
-                                    <Flex
-                                        fillWidth
-                                        gap="4"
-                                        direction="column">
-                                        <Text
-                                            id="Highest Education"
-                                            variant="heading-strong-l">
-                                            Highest Education
-                                        </Text>
-                                        <Text
-                                            variant="heading-default-xs"
-                                            onBackground="neutral-weak">
-                                            {profile.lastAttended}
-                                        </Text>
-                                    </Flex>
-                                    <Flex
-                                        fillWidth
-                                        gap="4"
-                                        direction="column">
-                                        <Text
-                                            id="Draft"
-                                            variant="heading-strong-l">
-                                            Draft
-                                        </Text>
-                                        <Text
-                                            variant="heading-default-xs"
-                                            onBackground="neutral-weak">
-                                            {profile.draft}
-                                        </Text>
-                                    </Flex>
-                                    <Flex
-                                        fillWidth
-                                        gap="4"
-                                        direction="column">
-                                        <Text
-                                            id="Experience"
-                                            variant="heading-strong-l">
-                                            Experience
-                                        </Text>
-                                        <Text
-                                            variant="heading-default-xs"
-                                            onBackground="neutral-weak">
-                                            {profile.experience}
-                                        </Text>
-                                    </Flex>
+                            <Flex direction="column" fillWidth gap="l" marginBottom="40">
+                                <Flex fillWidth gap="4" direction="column">
+                                    <Text id="Birthdate" variant="heading-strong-l">
+                                        Birthdate
+                                    </Text>
+                                    <Text variant="heading-default-xs" onBackground="neutral-weak">
+                                        {profile.birthdate}
+                                    </Text>
+                                </Flex>
+                                <Flex fillWidth gap="4" direction="column">
+                                    <Text id="Current Team" variant="heading-strong-l">
+                                        Current Team
+                                    </Text>
+                                    <Text variant="heading-default-xs" onBackground="neutral-weak">
+                                        {profile.team}
+                                    </Text>
+                                </Flex>
+                                <Flex fillWidth gap="4" direction="column">
+                                    <Text id="Position" variant="heading-strong-l">
+                                        Position
+                                    </Text>
+                                    <Text variant="heading-default-xs" onBackground="neutral-weak">
+                                        {profile.position}
+                                    </Text>
+                                </Flex>
+                                <Flex fillWidth gap="4" direction="column">
+                                    <Text id="Height" variant="heading-strong-l">
+                                        Height
+                                    </Text>
+                                    <Text variant="heading-default-xs" onBackground="neutral-weak">
+                                        {profile.height} ({profile.height_metric})
+                                    </Text>
+                                </Flex>
+                                <Flex fillWidth gap="4" direction="column">
+                                    <Text id="Weight" variant="heading-strong-l">
+                                        Weight
+                                    </Text>
+                                    <Text variant="heading-default-xs" onBackground="neutral-weak">
+                                        {profile.weight} ({profile.weight_metric})
+                                    </Text>
+                                </Flex>
+                                <Flex fillWidth gap="4" direction="column">
+                                    <Text id="Country" variant="heading-strong-l">
+                                        Country
+                                    </Text>
+                                    <Text variant="heading-default-xs" onBackground="neutral-weak">
+                                        {profile.country.toUpperCase()}
+                                    </Text>
+                                </Flex>
+                                <Flex fillWidth gap="4" direction="column">
+                                    <Text id="Highest Education" variant="heading-strong-l">
+                                        Highest Education
+                                    </Text>
+                                    <Text variant="heading-default-xs" onBackground="neutral-weak">
+                                        {profile.lastAttended}
+                                    </Text>
+                                </Flex>
+                                <Flex fillWidth gap="4" direction="column">
+                                    <Text id="Draft" variant="heading-strong-l">
+                                        Draft
+                                    </Text>
+                                    <Text variant="heading-default-xs" onBackground="neutral-weak">
+                                        {profile.draft}
+                                    </Text>
+                                </Flex>
+                                <Flex fillWidth gap="4" direction="column">
+                                    <Text id="Experience" variant="heading-strong-l">
+                                        Experience
+                                    </Text>
+                                    <Text variant="heading-default-xs" onBackground="neutral-weak">
+                                        {profile.experience}
+                                    </Text>
+                                </Flex>
                             </Flex>
                         </>
                     )}
