@@ -114,7 +114,7 @@ export default async function Home(
 							<Heading
 								wrap="balance"
 								variant="display-strong-l">
-								{home.headline}
+								The King’s Court: Dive into LeBron's Dominances.
 							</Heading>
 						</RevealFx>
 						<RevealFx
@@ -123,6 +123,7 @@ export default async function Home(
 								wrap="balance"
 								onBackground="neutral-weak"
 								variant="heading-default-xl">
+								LeBron James Fanpage<br/>
 								{formatNumberWithCommas(data)} Points and His Legacy<br/><InlineCode>{home.subline}</InlineCode>
 							</Text>
 						</RevealFx>	

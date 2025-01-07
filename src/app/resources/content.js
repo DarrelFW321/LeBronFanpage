@@ -48,7 +48,7 @@ const home = {
     label: 'Home',
     title: `The King's Court`,
     description: `LeBron James FanPage`,
-    headline: <>The King’s Court: Dive into LeBron's Dominances</>,
+    headline: <>The King’s Court: Dive into LeBron's Dominances. LeBron James Fanpage</>,
     subline: <>Stats, Profile, and More</>
 }
 
