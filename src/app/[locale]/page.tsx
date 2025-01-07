@@ -124,7 +124,7 @@ export default async function Home(
 								onBackground="neutral-weak"
 								variant="heading-default-xl">
 								LeBron James Fanpage<br/>
-								{formatNumberWithCommas(data)} Points and His Legacy<br/><InlineCode>{home.subline}</InlineCode>
+								{formatNumberWithCommas(data)} Points and His Legacy<br/>{home.subline}
 							</Text>
 						</RevealFx>	
 					</Flex>
