@@ -123,8 +123,7 @@ export default async function Home(
 								wrap="balance"
 								onBackground="neutral-weak"
 								variant="heading-default-xl">
-								LeBron James Fanpage<br/>
-								{formatNumberWithCommas(data)} Points and His Legacy<br/>{home.subline}
+								LeBron James Fanpage<br/> Points and His Legacy<br/>{home.subline}
 							</Text>
 						</RevealFx>	
 					</Flex>
@@ -151,7 +150,17 @@ export default async function Home(
 					</Flex>
 				</Flex>
 			)}
-			<Projects range={[2]} locale={locale}/>
+			<Projects range={[2]} locale={locale}/>	
+			<Flex direction="column" fillWidth maxWidth="s">
+				<RevealFx
+					translateY="4" fillWidth justifyContent="flex-start" paddingBottom="m">
+					<Heading
+						wrap="balance"
+						variant="display-strong-l">
+						{formatNumberWithCommas(data)} Points and Counting...
+					</Heading>
+				</RevealFx>
+			</Flex>
 			{ newsletter.display &&
 				<Mailchimp newsletter={newsletter} />
 			}
