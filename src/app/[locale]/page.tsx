@@ -66,7 +66,8 @@ const fetchPlayerStats = async () => {
 }
 
 function formatNumberWithCommas(number) {
-    return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+		if (number == null) return ''; // Handle undefined or null
+		return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 }
 
 export default async function Home(
