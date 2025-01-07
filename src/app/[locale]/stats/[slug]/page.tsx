@@ -222,7 +222,8 @@ const fetchUpcomingGames = async (team) => {
 
 async function FiveUpcomingGames() {
     // Fetch the team name
-    const team = await fetchTeam();  // Assuming this function will return the team name (e.g., 'lakers')
+    const teamdata = await fetchTeam();  // Assuming this function will return the team name (e.g., 'lakers')
+    const team = teamdata.split(" ").pop();
 
     // Fetch the upcoming games for the team
     const games = await fetchUpcomingGames(team);  // Fetch the next 5 games
