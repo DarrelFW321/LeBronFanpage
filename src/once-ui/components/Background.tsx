@@ -131,11 +131,11 @@ const Background = forwardRef<HTMLDivElement, BackgroundProps>(
             switch (mask) {
                 case 'none':
                     return { maskImage: 'none' };
-                case 'cursor':
-                    return {
-                        maskImage: `radial-gradient(circle ${maskSize / 2}px at ${smoothPosition.x}px ${smoothPosition.y}px, rgba(0, 0, 0, 1) 20%, rgba(0, 0, 0, 0) 100%)`,
-                        maskSize: '100% 100%',
-                    };
+                    case 'cursor':
+                        return {
+                            maskImage: `radial-gradient(circle ${maskSize/2}px at ${smoothPosition.x}px ${smoothPosition.y}px, rgba(0, 0, 0, 1) 20%, rgba(0, 0, 0, 0) 100%)`,
+                            maskSize: '200% 200%',
+                        };
                 case 'topLeft':
                     return {
                         maskImage: `radial-gradient(circle ${maskSize / 2}px at 0% 0%, rgba(0, 0, 0, 1) 20%, rgba(0, 0, 0, 0) 100%)`,
