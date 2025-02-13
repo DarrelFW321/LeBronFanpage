@@ -9,6 +9,11 @@ import { useTranslations } from 'next-intl';
 import { formatDate } from '@/app/utils/formatDate';
 import ScrollToHash from '@/components/ScrollToHash';
 import { HeadingLink } from '@/components';
+import axios from 'axios';
+import * as cheerio from 'cheerio';
+
+const PLAYER_URL = "https://www.basketball-reference.com/players/j/jamesle01.html"; // LeBron James' page
+
 
 interface WorkParams {
     params: {
@@ -16,6 +21,70 @@ interface WorkParams {
 		locale: string;
     };
 }
+
+interface Team {
+    teamName: string;
+    teamCity: string;
+    teamTricode: string;
+  }
+  
+  interface Broadcaster {
+    broadcasterDisplay: string;
+  }
+  
+  interface Game {
+    gameId: string;
+    gameDateUTC: string;
+    gameTimeUTC: string;
+    gameDateTimeUTC: string;
+    homeTeam: Team;
+    awayTeam: Team;
+    arenaName: string;
+    arenaCity: string;
+    broadcasters: {
+      nationalBroadcasters: Broadcaster[];
+    };
+  }
+  
+  interface GameDate {
+    games: Game[];
+  }
+  
+  interface LeagueSchedule {
+    gameDates: GameDate[];
+  }
+  
+  interface ApiResponse {
+    leagueSchedule: LeagueSchedule;
+  }
+
+interface GameData {
+    date: string;
+    team: string;
+    opponent: string;
+    result: string;
+    mp: string;
+    fg: string;
+    fga: string;
+    fgPercent: string;
+    threeP: string;
+    threePA: string;
+    threePPercent: string;
+    ft: string;
+    fta: string;
+    ftPercent: string;
+    orb: string;
+    drb: string;
+    trb: string;
+    ast: string;
+    stl: string;
+    blk: string;
+    tov: string;
+    pf: string;
+    pts: string;
+    gmSc: string;
+    plusMinus: string;
+  }
 
 export async function generateStaticParams(): Promise<{ slug: string; locale: string }[]> {
 	const locales = routing.locales;
@@ -82,156 +151,278 @@ export function generateMetadata({ params: { slug, locale } }: WorkParams) {
 }
 
 const fetchCareerStats = async () => {
+    const url = 'https://www.nbcsports.com/nba/lebron-james/9844/stats';
+
     try {
-        // Set the base URL based on the environment (local or production)
-        const baseUrl = process.env.NODE_ENV === 'development'
-            ? 'http://localhost:3000' // Local development URL
-            : process.env.NEXT_PUBLIC_PRODUCTION_API_BASE_URL; // Production URL
-
-
-            const url = `${baseUrl}/api/career`;
-            console.log(url);
-            // Call the API endpoint for fetching recent games
-            const response = await fetch(url, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        });
-
-        // Check if the response is OK
-        if (!response.ok) {
-            throw new Error(`Failed to fetch career stats: ${response.statusText}`);
-        }
-
-        // Parse the JSON data
-        const data = await response.json();
-		console.log(data);
-        return data; // Return the career stats data
+      // Fetch the HTML content of the page
+      const { data } = await axios.get(url);
+      
+      // Load the HTML data into Cheerio
+      const $ = cheerio.load(data);
+  
+      // Extract Career Stats (last row in <tfoot>)
+      const careerStatsRow = $('tfoot tr').last();
+  
+      const careerStats = {
+        games: careerStatsRow.find('td').eq(2).text().trim(), // G
+        minutes: careerStatsRow.find('td').eq(3).text().trim(), // MIN
+        points: careerStatsRow.find('td').eq(4).text().trim(), // PTS
+        rebounds: careerStatsRow.find('td').eq(5).text().trim(), // REB
+        offensiveRebounds: careerStatsRow.find('td').eq(6).text().trim(), // OREB
+        assists: careerStatsRow.find('td').eq(7).text().trim(), // AST
+        steals: careerStatsRow.find('td').eq(8).text().trim(), // STL
+        blocks: careerStatsRow.find('td').eq(9).text().trim(), // BLK
+        fouls: careerStatsRow.find('td').eq(10).text().trim(), // PF
+        turnovers: careerStatsRow.find('td').eq(11).text().trim(), // TO
+        fieldGoalsMade: careerStatsRow.find('td').eq(12).text().trim(), // FGM
+        fieldGoalsAttempted: careerStatsRow.find('td').eq(13).text().trim(), // FGA
+        fieldGoalPercentage: careerStatsRow.find('td').eq(14).text().trim(), // FG%
+        threePointersMade: careerStatsRow.find('td').eq(15).text().trim(), // 3PTM
+        threePointersAttempted: careerStatsRow.find('td').eq(16).text().trim(), // 3PTA
+        threePointPercentage: careerStatsRow.find('td').eq(17).text().trim(), // 3PT%
+        freeThrowsMade: careerStatsRow.find('td').eq(18).text().trim(), // FTM
+        freeThrowsAttempted: careerStatsRow.find('td').eq(19).text().trim(), // FTA
+        freeThrowPercentage: careerStatsRow.find('td').eq(20).text().trim(), // FT%
+      };
+  
+      // Extract Current Season Stats (second row in <tfoot>)
+      const currentSeasonStatsRow = $('tfoot tr').eq(1); // Second row
+  
+      const currentSeasonStats = {
+        games: currentSeasonStatsRow.find('td').eq(2).text().trim(), // G
+        minutes: currentSeasonStatsRow.find('td').eq(3).text().trim(), // MIN
+        points: currentSeasonStatsRow.find('td').eq(4).text().trim(), // PTS
+        rebounds: currentSeasonStatsRow.find('td').eq(5).text().trim(), // REB
+        offensiveRebounds: currentSeasonStatsRow.find('td').eq(6).text().trim(), // OREB
+        assists: currentSeasonStatsRow.find('td').eq(7).text().trim(), // AST
+        steals: currentSeasonStatsRow.find('td').eq(8).text().trim(), // STL
+        blocks: currentSeasonStatsRow.find('td').eq(9).text().trim(), // BLK
+        fouls: currentSeasonStatsRow.find('td').eq(10).text().trim(), // PF
+        turnovers: currentSeasonStatsRow.find('td').eq(11).text().trim(), // TO
+        fieldGoalsMade: currentSeasonStatsRow.find('td').eq(12).text().trim(), // FGM
+        fieldGoalsAttempted: currentSeasonStatsRow.find('td').eq(13).text().trim(), // FGA
+        fieldGoalPercentage: currentSeasonStatsRow.find('td').eq(14).text().trim(), // FG%
+        threePointersMade: currentSeasonStatsRow.find('td').eq(15).text().trim(), // 3PTM
+        threePointersAttempted: currentSeasonStatsRow.find('td').eq(16).text().trim(), // 3PTA
+        threePointPercentage: currentSeasonStatsRow.find('td').eq(17).text().trim(), // 3PT%
+        freeThrowsMade: currentSeasonStatsRow.find('td').eq(18).text().trim(), // FTM
+        freeThrowsAttempted: currentSeasonStatsRow.find('td').eq(19).text().trim(), // FTA
+        freeThrowPercentage: currentSeasonStatsRow.find('td').eq(20).text().trim(), // FT%
+      };
+  
+      // Return the extracted stats as a JSON response
+      return {
+        careerStats,
+        currentSeasonStats
+      };
     } catch (error) {
-        console.error('Error fetching career stats:', error);
-        return null; // Return null in case of an error
+      console.error('Error fetching player stats:', error);
+      return null;
     }
 };
 
 const fetchRecentGames = async () => {
-    try {
-        // Set the base URL based on the environment (local or production)
-        const baseUrl = process.env.NODE_ENV === 'development'
-            ? 'http://localhost:3000' // Local development URL
-            : process.env.NEXT_PUBLIC_PRODUCTION_API_BASE_URL; // Production URL
+  try {
+    // Step 1: Fetch the page content from LeBron's game log on Basketball Reference
+    const response = await axios.get('https://www.basketball-reference.com/players/j/jamesle01.html');
 
-        const url = `${baseUrl}/api/recentgames`;
-        console.log(url);
-        // Call the API endpoint for fetching recent games
-        const response = await fetch(url, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        });
-
-        // Check if the response is OK
-        if (!response.ok) {
-            throw new Error(`Failed to fetch recent games: ${response.statusText}`);
-        }
-
-        console.log('Raw Response:', response);
-
-        // Parse the JSON data
-        const data = await response.json();
-        console.log(data);
-        return data; // Return the recent games data
-    } catch (error) {
-        console.error('Error fetching recent games:', error);
-        return null; // Return null in case of an error
+    if (response.status !== 200) {
+      throw new Error('Failed to fetch data from Basketball Reference');
     }
+
+    // Step 2: Load the HTML content using Cheerio
+    const $ = cheerio.load(response.data);
+
+    // Step 3: Select the game log rows and map the last 5 games
+    const last5Games: GameData[] = []; // Typed as GameData[]
+    const rows = $('tr'); // Select all rows in the table
+
+    // Iterate over rows and collect only game rows
+    for (let i = 0; i < rows.length && last5Games.length < 5; i++) {
+      const row = rows[i];
+      const columns = $(row).find('td');
+
+      // Check if row contains game data (skip non-game rows, headers, or empty rows)
+      if (columns.length === 26) {
+        const gameData: GameData = {
+          date: $(row).find('[data-stat="date"] a').text(), // Game date
+          team: $(row).find('[data-stat="team_name_abbr"] a').text(), // Team
+          opponent: $(row).find('[data-stat="opp_name_abbr"] a').text(), // Opponent
+          result: $(row).find('[data-stat="game_result"]').text(), // Result
+          mp: $(columns[5]).text(), // Minutes Played
+          fg: $(columns[6]).text(), // Field Goals Made
+          fga: $(columns[7]).text(), // Field Goals Attempted
+          fgPercent: $(columns[8]).text(), // Field Goal Percentage
+          threeP: $(columns[9]).text(), // Three-Point Made
+          threePA: $(columns[10]).text(), // Three-Point Attempts
+          threePPercent: $(columns[11]).text(), // Three-Point Percentage
+          ft: $(columns[12]).text(), // Free Throws Made
+          fta: $(columns[13]).text(), // Free Throws Attempted
+          ftPercent: $(columns[14]).text(), // Free Throw Percentage
+          orb: $(columns[15]).text(), // Offensive Rebounds
+          drb: $(columns[16]).text(), // Defensive Rebounds
+          trb: $(columns[17]).text(), // Total Rebounds
+          ast: $(columns[18]).text(), // Assists
+          stl: $(columns[19]).text(), // Steals
+          blk: $(columns[20]).text(), // Blocks
+          tov: $(columns[21]).text(), // Turnovers
+          pf: $(columns[22]).text(), // Personal Fouls
+          pts: $(columns[23]).text(), // Points
+          gmSc: $(columns[24]).text(), // Game Score
+          plusMinus: $(columns[25]).text(), // Plus/Minus
+        };
+
+        last5Games.push(gameData);
+
+        console.log(`Game ${last5Games.length}:`, gameData);
+      }
+    }
+
+    // Step 4: Return the last 5 games data as a response
+    return last5Games;
+  } catch (error) {
+    console.error('Error fetching LeBron\'s last 5 games:', error);
+    return null;
+  }
 };
 
 const fetchTeam = async () => {
     try {
-        // Set the base URL based on the environment (local or production)
-        const baseUrl = process.env.NODE_ENV === 'development'
-            ? 'http://localhost:3000' // Local development URL
-            : process.env.NEXT_PUBLIC_PRODUCTION_API_BASE_URL; // Production URL
-
-        const url = `${baseUrl}/api/profile`;
-        console.log(url);
-        // Call the API endpoint
-        const response = await fetch(url, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        });
-
-        // Check if the response is OK
-        if (!response.ok) {
-            throw new Error(`Failed to fetch profile: ${response.statusText}`);
-        }
-        // Parse the JSON data
-        const data = await response.json();
-        console.log('team:', data.team);
-        return data.team; // Return the profile data
-    } catch (error) {
-        console.error('Error fetching profile:', error);
-        return null; // Return null in case of an error
-    }
+            console.log("Fetching player profile from Basketball Reference...");
+        
+            // Fetch the HTML of the player profile page
+            const response = await fetch(PLAYER_URL, {
+              headers: {
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.82 Safari/537.36",
+              }, cache: "no-store"
+            });
+        
+            if (!response.ok) {
+              throw new Error(`Failed to fetch player profile: ${response.statusText}`);
+            }
+        
+            // Load the HTML into Cheerio for parsing
+            const html = await response.text();
+            const $ = cheerio.load(html);
+    
+            // Extract other information
+            const team = $("p:contains('Team') a").text().trim(); // Los Angeles Lakers
+        
+            console.log("Player team fetched successfully:", team);
+        
+            return team;
+          } catch (error) {
+            console.error("Error fetching player team:", (error as Error).message);
+            return null;
+          }
 };
 
 const fetchUpcomingGames = async (team) => {
-    try {
-        // Set the base URL based on the environment (local or production)
-        const baseUrl = process.env.NODE_ENV === 'development'
-            ? 'http://localhost:3000' // Local development URL
-            : process.env.NEXT_PUBLIC_PRODUCTION_API_BASE_URL; // Production URL
-
-
-        const url = `${baseUrl}/api/upcoming?team=${team}`
-        // Call the API endpoint with the team name
-        const response = await fetch(url, {
-            method: 'GET',
+      // Updated handler function
+        try {
+          const url = "https://cdn.nba.com/static/json/staticData/scheduleLeagueV2.json";
+      
+          // Fetch data from the NBA API
+          const response = await fetch(url, {
+            method: "GET",
             headers: {
-                'Content-Type': 'application/json',
+              "User-Agent":
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36",
+              Accept: "application/json, text/plain, */*",
             },
-        });
+          });
+      
+          if (!response.ok) {
+            console.log("failed to fetch upcoming games");
+            return null;
+          }
+      
+          const data: ApiResponse = await response.json();
 
-        // Check if the response is OK
-        if (!response.ok) {
-            throw new Error(`Failed to fetch games: ${response.statusText}`);
+          const { leagueSchedule } = data;
+          const { gameDates } = leagueSchedule;
+      
+          // Flatten games from all dates
+          const allGames: Game[] = gameDates.flatMap((date: GameDate) => date.games);
+          
+          const extractLastWord = (name) => name.trim().split(" ").pop().toLowerCase();
+          // Filter games for the specified team
+          const filteredGames: Game[] = allGames.filter((game: Game) => {
+            const homeTeam = game.homeTeam?.teamName?.toLowerCase();
+            const awayTeam = game.awayTeam?.teamName?.toLowerCase();
+            const searchTeam = extractLastWord(team); // Extract last word from input team name
+      
+            // Only include games if the team name is valid and matches
+
+            return homeTeam === searchTeam || awayTeam === searchTeam;
+          });
+      
+          // Get the current time and compare
+          const currentDate = new Date();
+      
+          // Filter games for the future and sort by the full date-time
+          const upcomingGames: Game[] = filteredGames
+            .filter((game: Game) => {
+              const gameDateTime = new Date(game.gameDateTimeUTC); // Combined date-time
+              return gameDateTime > currentDate; // Only future games
+            })
+            .sort((a: Game, b: Game) => {
+              const dateA = new Date(a.gameDateTimeUTC).getTime();
+              const dateB = new Date(b.gameDateTimeUTC).getTime();
+              return dateA - dateB; // Sort by combined date-time in milliseconds
+            })
+            .slice(0, 5); // Get the next 5 games
+      
+          // Format the response
+          const formattedGames = upcomingGames.map((game: Game) => {
+            // Convert UTC times to local time
+            const localGameDate = new Date(game.gameDateUTC).toLocaleDateString();
+            const localGameTime = new Date(game.gameTimeUTC).toLocaleTimeString("en-US", {
+              hour: "2-digit",
+              minute: "2-digit",
+              hour12: true,
+            });
+      
+            return {
+              gameId: game.gameId,
+              date: localGameDate, // Only date part
+              time: localGameTime, // Local time
+              homeTeam: {
+                name: game.homeTeam.teamName,
+                city: game.homeTeam.teamCity,
+                tricode: game.homeTeam.teamTricode,
+              },
+              awayTeam: {
+                name: game.awayTeam.teamName,
+                city: game.awayTeam.teamCity,
+                tricode: game.awayTeam.teamTricode,
+              },
+              arena: game.arenaName,
+              city: game.arenaCity,
+              broadcasters: game.broadcasters.nationalBroadcasters.map((b: Broadcaster) => b.broadcasterDisplay),
+              localTime: `${localGameDate} ${localGameTime}`, // Combined local time
+            };
+          });
+          return formattedGames;
+        } catch (error) {
+          console.error("Error fetching NBA schedule:", error);
+          return null;
         }
-
-        // Parse the JSON data
-        const data = await response.json();
-
-        if (!data || !data.games || data.games.length === 0) {
-            throw new Error('No games found for this team.');
-        }
-
-        // Limit to next 5 games
-        const upcomingGames = data.games.slice(0, 5);
-
-        console.log('Upcoming Games:', upcomingGames);
-        return upcomingGames; // Return the upcoming games
-
-    } catch (error) {
-        console.error('Error fetching upcoming games:', error);
-        return null; // Return null in case of an error
-    }
 };
 
 async function FiveUpcomingGames() {
     // Fetch the team name
-    const teamdata = await fetchTeam();  // Assuming this function will return the team name (e.g., 'lakers')
-    const team = teamdata.split(" ").pop();
+    const team = await fetchTeam();  // Assuming this function will return the team name (e.g., 'lakers')
 
     // Fetch the upcoming games for the team
     const games = await fetchUpcomingGames(team);  // Fetch the next 5 games
-
+    
     const currentDate = new Date();
     const formattedDate = currentDate.toLocaleString('en-US', {
         timeZoneName: 'short',
     });
+
+    console.log(games);
 
     const gameCard = (game) => (
         <div style={{
@@ -279,7 +470,7 @@ async function FiveUpcomingGames() {
                 color: 'var(--color-text-secondary)',
                 marginBottom: '6px',
             }}>
-                Broadcasters: {game.broadcasters.join(', ')}
+                Broadcasters: {game.broadcasters.length ? game.broadcasters.join(', ') : 'No Broadcaster Information Available'}
             </p>
         </div>
     );
@@ -353,29 +544,29 @@ async function LiveTotalStats() {
 
     // Extracted data for regular season stats (career and current season)
     const careerSeasonStats = {
-        Points: data.careerStats.points,
-        Rebounds: data.careerStats.rebounds,
-        Assists: data.careerStats.assists,
-        Steals: data.careerStats.steals,
-        Blocks: data.careerStats.blocks,
-        "Games Played": data.careerStats.games,
-        "Field Goal Percentage": data.careerStats.fieldGoalPercentage,
-        "Three-Point Percentage": data.careerStats.threePointPercentage,
-        "Free Throw Percentage": data.careerStats.freeThrowPercentage,
-        Minutes: data.careerStats.minutes,
+        Points: data?.careerStats?.points ?? 0,
+        Rebounds: data?.careerStats?.rebounds ?? 0,
+        Assists: data?.careerStats?.assists ?? 0,
+        Steals: data?.careerStats?.steals ?? 0,
+        Blocks: data?.careerStats?.blocks ?? 0,
+        "Games Played": data?.careerStats?.games ?? 0,
+        "Field Goal Percentage": data?.careerStats?.fieldGoalPercentage ?? 0,
+        "Three-Point Percentage": data?.careerStats?.threePointPercentage ?? 0,
+        "Free Throw Percentage": data?.careerStats?.freeThrowPercentage ?? 0,
+        Minutes: data?.careerStats?.minutes ?? 0,
     };
-
+    
     const currentSeasonStats = {
-        Points: data.currentSeasonStats.points,
-        Rebounds: data.currentSeasonStats.rebounds,
-        Assists: data.currentSeasonStats.assists,
-        Steals: data.currentSeasonStats.steals,
-        Blocks: data.currentSeasonStats.blocks,
-        "Games Played": data.currentSeasonStats.games,
-        "Field Goal Percentage": data.currentSeasonStats.fieldGoalPercentage,
-        "Three-Point Percentage": data.currentSeasonStats.threePointPercentage,
-        "Free Throw Percentage": data.currentSeasonStats.freeThrowPercentage,
-        Minutes: data.currentSeasonStats.minutes,
+        Points: data?.currentSeasonStats?.points ?? 0,
+        Rebounds: data?.currentSeasonStats?.rebounds ?? 0,
+        Assists: data?.currentSeasonStats?.assists ?? 0,
+        Steals: data?.currentSeasonStats?.steals ?? 0,
+        Blocks: data?.currentSeasonStats?.blocks ?? 0,
+        "Games Played": data?.currentSeasonStats?.games ?? 0,
+        "Field Goal Percentage": data?.currentSeasonStats?.fieldGoalPercentage ?? 0,
+        "Three-Point Percentage": data?.currentSeasonStats?.threePointPercentage ?? 0,
+        "Free Throw Percentage": data?.currentSeasonStats?.freeThrowPercentage ?? 0,
+        Minutes: data?.currentSeasonStats?.minutes ?? 0,
     };
 
     return (

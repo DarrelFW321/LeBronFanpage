@@ -9,6 +9,8 @@ import { Mailchimp } from '@/components';
 import { Posts } from '@/components/blog/Posts';
 import { getTranslations, unstable_setRequestLocale } from 'next-intl/server';
 import { useTranslations } from 'next-intl';
+import axios from 'axios';
+import * as cheerio from 'cheerio';
 
 
 export async function generateMetadata(
@@ -44,25 +46,26 @@ export async function generateMetadata(
 }
 
 const fetchPlayerStats = async () => {
-    try {
-        // Set the base URL based on the environment (local or production)
-        const baseUrl = process.env.NODE_ENV === 'development'
-            ? 'http://localhost:3000' // Local development URL
-            : process.env.NEXT_PUBLIC_PRODUCTION_API_BASE_URL; // Production URL
+    const url = 'https://www.nbcsports.com/nba/lebron-james/9844/stats';
 
-		const url = `${baseUrl}/api/career`;
-		console.log(url)
-        const response = await fetch(url); // Adjust the URL as needed
-        if (!response.ok) {
-            throw new Error('Failed to fetch player stats');
-        }
-        const data = await response.json();
-        return data.careerStats.points
+    try {
+      // Fetch the HTML content of the page
+      const { data } = await axios.get(url);
+      
+      // Load the HTML data into Cheerio
+      const $ = cheerio.load(data);
+  
+      // Extract Career Stats (last row in <tfoot>)
+      const careerStatsRow = $('tfoot tr').last();
+
+      const careerpoints = careerStatsRow.find('td').eq(4).text().trim(); // PTS
+
+	  return careerpoints;
     } catch (error) {
-        console.error('Error fetching player stats:', error);
-        return null;
+      console.error('Error fetching player stats:', error);
+      return null;
     }
-}
+};
 
 function formatNumberWithCommas(number) {
 		if (number == null) return ''; // Handle undefined or null

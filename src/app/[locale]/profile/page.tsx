@@ -3,6 +3,25 @@ import { baseURL, renderContent } from '@/app/resources';
 import TableOfContents from '@/components/about/TableOfContents';
 import styles from '@/components/about/about.module.scss'
 import { getTranslations, unstable_setRequestLocale } from 'next-intl/server';
+import * as cheerio from "cheerio";
+
+const PLAYER_URL = "https://www.basketball-reference.com/players/j/jamesle01.html"; // LeBron James' page
+
+interface PlayerProfile {
+    name: string;
+    team: string;
+    position: string;
+    height: string;
+    weight: string;
+    height_metric: string;
+    weight_metric: string;
+    country: string;
+    birthdate: string;
+    draft: string;
+    experience: string;
+    shootingHand: string;
+    lastAttended: string;
+  }
 
 export async function generateMetadata(
     {params: {locale}}: { params: { locale: string }}
@@ -39,33 +58,86 @@ export async function generateMetadata(
 
 const fetchProfile = async () => {
     try {
-        // Set the base URL based on the environment (local or production)
-        const baseUrl = process.env.NODE_ENV === 'development'
-            ? 'http://localhost:3000' // Local development URL
-            : process.env.NEXT_PUBLIC_PRODUCTION_API_BASE_URL; // Production URL
-
-        console.log("Base URL being used:", baseUrl); // Log base URL for debugging
-        const url = `${baseUrl}/api/profile`;
-        // Call the API endpoint
-        const response = await fetch(url, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-            },
+        console.log("Fetching player profile from Basketball Reference...");
+    
+        // Fetch the HTML of the player profile page
+        const response = await fetch(PLAYER_URL, {
+          headers: {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.82 Safari/537.36",
+          }, cache: "no-store"
         });
-
-        // Check if the response is OK
+    
         if (!response.ok) {
-            throw new Error(`Failed to fetch profile: ${response.statusText}`);
+          throw new Error(`Failed to fetch player profile: ${response.statusText}`);
         }
-        // Parse the JSON data
-        const data = await response.json();
-        console.log('Profile data:', data);
-        return data; // Return the profile data
-    } catch (error) {
-        console.error('Error fetching profile:', error);
-        return null; // Return null in case of an error
-    }
+    
+        // Load the HTML into Cheerio for parsing
+        const html = await response.text();
+        const $ = cheerio.load(html);
+    
+        // Extract required data using Cheerio selectors
+        const name = $("h1 span").text().trim(); // LeBron James
+    
+        // Extract position and clean up extra spaces (removes "▪ Shoots")
+        const positionText = $("p:contains('Position')").text().split(":")[1]?.trim() ?? "";
+        const position = positionText.replace(/\s+/g, " ").replace('▪ Shoots', '').trim();
+    
+        // Dynamically extract height and weight from the p tag
+        const heightWeightText = $("p:contains('Position') + p").text().trim(); // This is the paragraph after "Position"
+        
+        // Dynamically extract height (in format 6-9) and weight (in format 250lb)
+        const heightMatch = heightWeightText.match(/(\d{1,2}-\d{1,2})/); // For height like "6-9"
+        const weightMatch = heightWeightText.match(/(\d{3}lb)/); // For weight like "250lb"
+    
+        const height = heightMatch ? heightMatch[0].replace(/\s+/g, ' ') : "";
+        const weight = weightMatch ? weightMatch[0].replace(/\s+/g, ' ') : "";
+    
+        // Extract metric values from the text in parentheses (e.g., "206cm, 113kg")
+        const metricMatch = heightWeightText.match(/\((\d{3}cm),\s*(\d{3}kg)\)/);
+        const height_metric = metricMatch ? metricMatch[1] : "";
+        const weight_metric = metricMatch ? metricMatch[2] : "";
+    
+        // Extract other information
+        const team = $("p:contains('Team') a").text().trim(); // Los Angeles Lakers
+        const country = $("p:contains('Born') span").last().text().trim(); // Country
+        const birthdate = $("p:contains('Born') span").first().text().trim().replace(/\n/g, ' ').replace(/\s+/g, ' ').trim(); // Clean up newline and extra spaces
+        const draftText = $("p:contains('Draft')").text().split(":")[1]?.trim() ?? "Undrafted"; // Draft info
+    
+        // Fix the draft dynamic part
+        const draft = draftText.replace(/LeBron James was drafted by.*/i, "").trim();
+    
+        const experience = $("p:contains('Experience')").text().split(":")[1]?.trim() ?? ""; // Experience
+        
+        // Add shooting hand info (assumed from "Shoots" text)
+        const shootingHand = $("p:contains('Shoots')").text().includes("Right") ? "Right Handed" : "Left Handed";
+    
+        // Extract last attended (High School)
+        const lastAttended = $("p:contains('High School')").text().split(":")[1]?.trim() ?? "";
+    
+        // Clean up and format the data properly
+        const playerProfile: PlayerProfile = {
+          name,
+          team,
+          position,
+          height,
+          weight,
+          height_metric,
+          weight_metric,
+          country,
+          birthdate,
+          draft,
+          experience,
+          shootingHand,
+          lastAttended,
+        };
+    
+        console.log("Player profile fetched successfully:", playerProfile);
+    
+        return playerProfile;
+      } catch (error) {
+        console.error("Error fetching player profile:", (error as Error).message);
+        return null;
+      }
 };
 
 export default async function Profile(
@@ -243,7 +315,7 @@ export default async function Profile(
                                         Birthdate
                                     </Text>
                                     <Text variant="heading-default-xs" onBackground="neutral-weak">
-                                        {profile.birthdate}
+                                        {profile?.birthdate ?? "N/A"}
                                     </Text>
                                 </Flex>
                                 <Flex fillWidth gap="4" direction="column">
@@ -251,7 +323,7 @@ export default async function Profile(
                                         Current Team
                                     </Text>
                                     <Text variant="heading-default-xs" onBackground="neutral-weak">
-                                        {profile.team}
+                                        {profile?.team ?? "N/A"}
                                     </Text>
                                 </Flex>
                                 <Flex fillWidth gap="4" direction="column">
@@ -259,7 +331,7 @@ export default async function Profile(
                                         Position
                                     </Text>
                                     <Text variant="heading-default-xs" onBackground="neutral-weak">
-                                        {profile.position}
+                                        {profile?.position?? "N/A"}
                                     </Text>
                                 </Flex>
                                 <Flex fillWidth gap="4" direction="column">
@@ -267,7 +339,7 @@ export default async function Profile(
                                         Height
                                     </Text>
                                     <Text variant="heading-default-xs" onBackground="neutral-weak">
-                                        {profile.height} ({profile.height_metric})
+                                        {profile?.height ?? "N/A"} {profile?.height_metric ?? "N/A"}
                                     </Text>
                                 </Flex>
                                 <Flex fillWidth gap="4" direction="column">
@@ -275,7 +347,7 @@ export default async function Profile(
                                         Weight
                                     </Text>
                                     <Text variant="heading-default-xs" onBackground="neutral-weak">
-                                        {profile.weight} ({profile.weight_metric})
+                                        {profile?.weight ?? "N/A"} {profile?.weight_metric ?? "N/A"}
                                     </Text>
                                 </Flex>
                                 <Flex fillWidth gap="4" direction="column">
@@ -283,7 +355,7 @@ export default async function Profile(
                                         Country
                                     </Text>
                                     <Text variant="heading-default-xs" onBackground="neutral-weak">
-                                        {profile.country.toUpperCase()}
+                                        {profile?.country.toUpperCase() ?? "N/A"}
                                     </Text>
                                 </Flex>
                                 <Flex fillWidth gap="4" direction="column">
@@ -291,7 +363,7 @@ export default async function Profile(
                                         Highest Education
                                     </Text>
                                     <Text variant="heading-default-xs" onBackground="neutral-weak">
-                                        {profile.lastAttended}
+                                        {profile?.lastAttended ?? "N/A"}
                                     </Text>
                                 </Flex>
                                 <Flex fillWidth gap="4" direction="column">
@@ -299,7 +371,7 @@ export default async function Profile(
                                         Draft
                                     </Text>
                                     <Text variant="heading-default-xs" onBackground="neutral-weak">
-                                        {profile.draft}
+                                        {profile?.draft ?? "N/A"}
                                     </Text>
                                 </Flex>
                                 <Flex fillWidth gap="4" direction="column">
@@ -307,7 +379,7 @@ export default async function Profile(
                                         Experience
                                     </Text>
                                     <Text variant="heading-default-xs" onBackground="neutral-weak">
-                                        {profile.experience}
+                                        {profile?.experience ?? "N/A"}
                                     </Text>
                                 </Flex>
                             </Flex>
