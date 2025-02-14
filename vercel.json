@@ -1,0 +1,13 @@
+{
+  "routes": [
+    { "src": "/(.*)", "dest": "/index.html" }
+  ],
+  "build": {
+    "env": {
+      "NODE_ENV": "production"
+    }
+  },
+  "includeFiles": [
+    "src/app/[locale]/stats/projects/en/**"
+  ]
+}
