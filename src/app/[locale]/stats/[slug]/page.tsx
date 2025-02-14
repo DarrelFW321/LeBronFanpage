@@ -345,7 +345,7 @@ const fetchUpcomingGames = async (team) => {
           // Flatten games from all dates
           const allGames: Game[] = gameDates.flatMap((date: GameDate) => date.games);
           
-          const extractLastWord = (name) => name.trim().split(" ").pop().toLowerCase();
+          const extractLastWord = (name = "lakers") => (name || "lakers").trim().split(" ").pop()?.toLowerCase() || "";
           // Filter games for the specified team
           const filteredGames: Game[] = allGames.filter((game: Game) => {
             const homeTeam = game.homeTeam?.teamName?.toLowerCase();
