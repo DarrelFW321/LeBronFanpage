@@ -40,7 +40,7 @@ export async function generateMetadata(
 export default function Work(
     { params: {locale}}: { params: { locale: string }}
 ) {
-    let allProjects = getPosts(['src', 'app', '[locale]', 'stats', 'projects', locale]);
+    let allProjects = getPosts(['public', 'projects', locale]);
 
     const { person, work } = renderContent();
 
