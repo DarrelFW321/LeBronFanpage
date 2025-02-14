@@ -1,0 +1,7 @@
+{
+    "build": {
+      "env": {
+        "NEXT_PUBLIC_PROJECTS_DIR": "public/projects"
+      }
+    }
+  }
